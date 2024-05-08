@@ -14,22 +14,19 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './components/ListItems';
 import Chart from './components/Chart';
-import Deposits from './components/Deposits';
 import Orders from './components/Orders';
 import { Backdrop, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Sales from './components/Sales';
+import Navbar from '../Others/Navbar';
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        BMI Supply
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -88,11 +85,7 @@ const defaultTheme = createTheme();
 
 
 export default function Dashboard() {
-  const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
-  const navigate = useNavigate()
+
 
   return (
     <React.Suspense
@@ -107,70 +100,7 @@ export default function Dashboard() {
     >
       <ThemeProvider theme={defaultTheme}>
         <Box sx={{ display: 'flex' }}>
-          <CssBaseline />
-          <AppBar position="absolute" open={open}
-            sx={{
-              backgroundColor: '#178582'
-            }}
-          >
-            <Toolbar
-              sx={{
-                pr: '24px', // keep right padding when drawer closed
-              }}
-            >
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="open drawer"
-                onClick={toggleDrawer}
-                sx={{
-                  marginRight: '36px',
-                  ...(open && { display: 'none' }),
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography
-                component="h1"
-                variant="h6"
-                color="inherit"
-                noWrap
-                sx={{ flexGrow: 1 }}
-              >
-                Dashboard
-              </Typography>
-  
-              <Button color="inherit" variant='outlined' 
-                onClick={()=>{
-                  localStorage.removeItem('token')
-                  localStorage.removeItem('User')
-                  window.location.href = '/SignIn';
-                  
-                }}>
-                Logout
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <Drawer variant="permanent" open={open}>
-            <Toolbar
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                px: [1],
-              }}
-            >
-              <IconButton onClick={toggleDrawer}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Toolbar>
-            <Divider />
-            <List component="nav">
-              {mainListItems}
-              <Divider sx={{ my: 1 }} />
-              {secondaryListItems}
-            </List>
-          </Drawer>
+          <Navbar pageName={'Admin Dashboard'} />
           <Box
             component="main"
             sx={{
@@ -209,7 +139,7 @@ export default function Dashboard() {
                       height: 240,
                     }}
                   >
-                    <Deposits />
+                    <Sales />
                   </Paper>
                 </Grid>
                 {/* Recent Orders */}
