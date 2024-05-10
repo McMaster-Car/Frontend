@@ -16,7 +16,7 @@ export default function routes() {
     useEffect(() => {
         setLoading(true)
         const localStorageUser = JSON.parse(localStorage.getItem('User'))
-        console.log(localStorageUser);
+       
         //const userdata = JSON.parse(localStorageUser)
         if (localStorageUser?.isAdmin)
             setIsAdmin(true)

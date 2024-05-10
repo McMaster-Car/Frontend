@@ -6,6 +6,8 @@ const Products = lazy(() => import("../../Pages/admin/Products"));
 const Users = lazy(() => import("../../Pages/admin/Users"));
 const Orders = lazy(() => import("../../Pages/admin/Orders"));
 const Reports = lazy(() => import("../../Pages/admin/Reports"));
+const AddProductPage = lazy(() => import("../../Pages/admin/Products/Add_Products"));
+ 
 
 
 
@@ -32,6 +34,8 @@ export default function routess() {
                         <Routes>
                             <Route path="/" element={<Dashboard />} />
                             <Route path="/admin/products" element={<Products />} />
+                            <Route path="/admin/add-product" element={<AddProductPage />} />
+
                             <Route path="/admin/orders" element={<Orders />} />
                             <Route path="/admin/users" element={<Users />} />
                             <Route path="/admin/reports" element={< Reports />} />

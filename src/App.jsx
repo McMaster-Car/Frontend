@@ -3,6 +3,8 @@ import React, { Suspense, lazy, Fragment, useState, useDeferredValue, useEffect 
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 const Routes = lazy(() => import('./Router/router'))
+import store from './store/store';
+import { Provider } from 'react-redux';
 
 function App() {
 
@@ -17,9 +19,11 @@ function App() {
         </Backdrop>
       }
     >
-      <Fragment>
-        <Routes />
-      </Fragment>
+      <Provider store={store}>
+        <Fragment>
+          <Routes />
+        </Fragment>
+      </Provider>
     </Suspense>
   )
 }
