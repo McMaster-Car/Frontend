@@ -1,17 +1,19 @@
 import React, { Suspense, lazy, Fragment, useState, useDeferredValue, useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 const LandingPage = lazy(() => import("../Pages/Dashboard"));
 const AdminRoutes = lazy(() => import("./admin/router"));
 const SignIn = lazy(() => import('../Pages/Auth/SignIn'));
 const SignUp = lazy(() => import('../Pages/Auth/SignUp'));
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Button } from '@mui/material';
 
 
 export default function routes() {
 
     const [isAdmin, setIsAdmin] = useState(false)
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
         setLoading(true)
@@ -83,6 +85,9 @@ export default function routes() {
                             <h4>
                                 Please reach us soon
                             </h4>
+                            <Button variant='filled' color='secondary' onClick={()=> navigate('/SignIn')}>
+                                Sign In for Admin Dashboard
+                            </Button>
                         </div>
                     } />
                     <Route path='/SignIn' element={<SignIn />} />
