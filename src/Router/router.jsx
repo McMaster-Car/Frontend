@@ -16,7 +16,7 @@ export default function routes() {
     useEffect(() => {
         setLoading(true)
         const localStorageUser = JSON.parse(localStorage.getItem('User'))
-       
+
         //const userdata = JSON.parse(localStorageUser)
         if (localStorageUser?.isAdmin)
             setIsAdmin(true)
@@ -69,7 +69,22 @@ export default function routes() {
         >
             <Fragment>
                 <Routes>
-                    <Route path="/" element={<>Landing Page</>} />
+                    <Route path="/" element={
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                            <h1>
+                                Landing Page is yet to be created
+                            </h1>
+                            <h4>
+                                Please reach us soon
+                            </h4>
+                        </div>
+                    } />
                     <Route path='/SignIn' element={<SignIn />} />
                     <Route path='/SignUp' element={<SignUp />} />
                     <Route path="/*" element={<Navigate to="/" replace />} />
