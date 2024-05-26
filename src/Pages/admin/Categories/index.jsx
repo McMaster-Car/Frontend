@@ -1,29 +1,44 @@
-import { Backdrop, Box, Button, CircularProgress, Container, Grid, Paper, Toolbar, Typography } from '@mui/material'
+import {
+  Backdrop,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Toolbar,
+  Typography
+} from '@mui/material'
 import React, { Fragment, Suspense, useEffect, useState } from 'react'
 import Navbar from '../../Others/Navbar'
-import ProductTable from './components/ProductTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, selectProducts } from '../../../store/products/productsSlice';
+import { fetchCategories, selectCategories } from '../../../store/Categories/categorySlice';
 import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
+import CategoryTable from './Components/CategoryTable';
+import AddCategoryModal from '../Components/AddCategoryModal';
 
-function Products() {
+function Category() {
 
   const theme = useTheme()
 
   const dispatch = useDispatch();
-  const data = useSelector(selectProducts);
+  const data = useSelector(selectCategories);
 
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(true)
 
 
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
 
   useEffect(() => {
     setLoading(true)
-    dispatch(fetchProducts());
+    dispatch(fetchCategories());
     setLoading(false)
   }, [dispatch])
 
@@ -63,7 +78,7 @@ function Products() {
 
       <Fragment>
         <Box sx={{ display: 'flex' }}>
-          <Navbar pageName={'Products'} />
+          <Navbar pageName={'Categories'} />
           <Box
             component="main"
             sx={{
@@ -85,28 +100,26 @@ function Products() {
                     }}
                   >
                     <Button
+                      sx={{
+                        backgroundColor: theme.palette.secondary.main,
+                        border: '1 solid #178582', borderRadius: 2,
+                        color: '#fff',
+                        "&:hover": {
+                          color: '#000',
+                          backgroundColor: '#0da39f'
 
-
-                      onClick={()=> navigate('/admin/add-product')}
-                        sx={{
-                          backgroundColor: theme.palette.secondary.main,
-                          border: '1 solid #178582', borderRadius: 2,
-                          color: '#fff',
-                          "&:hover": {
-                            color: '#000',
-                            backgroundColor: '#0da39f'
-
-                          }
-                        }}
-                    >
-                      Add Product
+                        }
+                      }}
+                      onClick={handleOpen}>
+                      Add Category
                     </Button>
+                    <AddCategoryModal open={open} onClose={handleClose} categories={data?.categories ? data.categories : []} />
 
                   </Box>
                 </Grid>
 
                 <Grid item xs={12} md={12} lg={12}>
-                  <ProductTable products={data?.products ? data.products : []} />
+                  <CategoryTable Categories={data?.categories ? data.categories : []} />
                 </Grid>
 
               </Grid>
@@ -119,4 +132,4 @@ function Products() {
   )
 }
 
-export default Products
+export default Category

@@ -8,6 +8,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import StoreIcon from '@mui/icons-material/Store';
+import CategoryIcon from '@mui/icons-material/Category';
+import ChecklistRoundedIcon from '@mui/icons-material/ChecklistRounded';
 
 export const mainListItems = (
   <React.Fragment>
@@ -23,6 +25,19 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Products" />
     </ListItemButton>
+    <ListItemButton component={Link} to="/admin/categories">
+      <ListItemIcon>
+        <CategoryIcon />
+      </ListItemIcon>
+      <ListItemText primary="Categories" />
+    </ListItemButton>
+    <ListItemButton component={Link} to="/admin/attributes">
+      <ListItemIcon>
+        <ChecklistRoundedIcon />
+      </ListItemIcon>
+      <ListItemText primary="Attributes" />
+    </ListItemButton>
+    
     <ListItemButton component={Link} to="/admin/orders">
       <ListItemIcon>
         <ShoppingCartIcon />

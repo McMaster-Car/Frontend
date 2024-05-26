@@ -5,7 +5,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
 const lightPalette = {
-  primary: '#0A1828',
+  primary: '#0f2742',
   secondary: '#178582',
   tertiary: '#BFA181',
   text: '#000',
@@ -19,7 +19,7 @@ const lightPalette = {
 };
 
 const darkPalette = {
-  primary: '#0A1828',
+  primary: '#0f2742',
   secondary: '#178582',
   tertiary: '#BFA181',
   text: '#ffffff',

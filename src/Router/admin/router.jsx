@@ -1,6 +1,8 @@
 import { AppBar, Backdrop, Box, Button, CircularProgress, Divider, Drawer, IconButton, List, Toolbar, Typography } from '@mui/material';
 import React, { Suspense, lazy, Fragment } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
+const Attributes =  lazy(() => import('../../Pages/admin/Attributes'));
+const Category =  lazy(() => import('../../Pages/admin/Categories'));
 const Dashboard = lazy(() => import("../../Pages/Dashboard"));
 const Products = lazy(() => import("../../Pages/admin/Products"));
 const Users = lazy(() => import("../../Pages/admin/Users"));
@@ -34,6 +36,10 @@ export default function routess() {
                         <Routes>
                             <Route path="/" element={<Dashboard />} />
                             <Route path="/admin/products" element={<Products />} />
+                            <Route path="/admin/attributes" element={<Attributes />} />
+                            <Route path="/admin/categories" element={<Category />} />
+
+
                             <Route path="/admin/add-product" element={<AddProductPage />} />
 
                             <Route path="/admin/orders" element={<Orders />} />

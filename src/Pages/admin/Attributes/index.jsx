@@ -1,29 +1,50 @@
-import { Backdrop, Box, Button, CircularProgress, Container, Grid, Paper, Toolbar, Typography } from '@mui/material'
+import { 
+    Backdrop, 
+    Box,
+    Button, 
+    CircularProgress, 
+    Container, 
+    Grid, 
+    Paper, 
+    Toolbar, 
+    Typography
+ } from '@mui/material'
 import React, { Fragment, Suspense, useEffect, useState } from 'react'
 import Navbar from '../../Others/Navbar'
-import ProductTable from './components/ProductTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, selectProducts } from '../../../store/products/productsSlice';
+import { fetchAttributes, selectattributes } from '../../../store/Attributes/attributeSlice';
 import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
+import AttributeTable from './Components/AttritbuteTable';
+import AddAttributeModal from '../Components/AddAttributeModal';
 
-function Products() {
+function Attributes() {
 
   const theme = useTheme()
 
   const dispatch = useDispatch();
-  const data = useSelector(selectProducts);
+  const data = useSelector(selectattributes);
 
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(true)
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
 
 
 
   useEffect(() => {
     setLoading(true)
-    dispatch(fetchProducts());
+    dispatch(fetchAttributes());
     setLoading(false)
   }, [dispatch])
 
@@ -63,7 +84,7 @@ function Products() {
 
       <Fragment>
         <Box sx={{ display: 'flex' }}>
-          <Navbar pageName={'Products'} />
+          <Navbar pageName={'Attributes'} />
           <Box
             component="main"
             sx={{
@@ -87,7 +108,7 @@ function Products() {
                     <Button
 
 
-                      onClick={()=> navigate('/admin/add-product')}
+                      onClick={handleOpen}
                         sx={{
                           backgroundColor: theme.palette.secondary.main,
                           border: '1 solid #178582', borderRadius: 2,
@@ -99,18 +120,19 @@ function Products() {
                           }
                         }}
                     >
-                      Add Product
+                      Add Attribute
                     </Button>
 
                   </Box>
                 </Grid>
 
                 <Grid item xs={12} md={12} lg={12}>
-                  <ProductTable products={data?.products ? data.products : []} />
+                  <AttributeTable Attributes={data?.attributes ? data.attributes : []} />
                 </Grid>
 
               </Grid>
 
+              <AddAttributeModal open={open} handleClose={handleClose} />
             </Container>
           </Box>
         </Box>
@@ -119,4 +141,4 @@ function Products() {
   )
 }
 
-export default Products
+export default Attributes
