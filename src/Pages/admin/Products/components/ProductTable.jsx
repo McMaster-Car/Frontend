@@ -39,27 +39,27 @@ const ProductTable = ({ products }) => {
                 size: 250,
             },
 
-            {
-                accessorKey: 'Actions',
-                header: 'Actions',
-                size: 100,
-                Cell: ({ row }) => (
-                    <div>
-                        <VisibilityIcon
-                            sx={{
-                                cursor: 'pointer',
-                                mr: 1.5
-                            }}
-                            onClick={() => viewProduct(row.original)} color='secondary' />
-                        {/* <button onClick={() => editProduct(row.original)}>Edit</button> */}
-                        <DeleteIcon
-                            sx={{
-                                cursor: 'pointer'
-                            }}
-                            onClick={() => handleDeleteOpen(row.original.Id)} color='error' />
-                    </div>
-                ),
-            },
+            // {
+            //     accessorKey: 'Actions',
+            //     header: 'Actions',
+            //     size: 100,
+            //     Cell: ({ row }) => (
+            //         <div>
+            //             <VisibilityIcon
+            //                 sx={{
+            //                     cursor: 'pointer',
+            //                     mr: 1.5
+            //                 }}
+            //                 onClick={() => viewProduct(row.original)} color='secondary' />
+            //             {/* <button onClick={() => editProduct(row.original)}>Edit</button> */}
+            //             <DeleteIcon
+            //                 sx={{
+            //                     cursor: 'pointer'
+            //                 }}
+            //                 onClick={() => handleDeleteOpen(row.original.Id)} color='error' />
+            //         </div>
+            //     ),
+            // },
         ],
         [],
     );
