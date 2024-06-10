@@ -14,7 +14,6 @@ const ProductTable = ({ products }) => {
     const [selectedProduct, setSelectedProduct] = useState({});
     const [productIdToDelete, setProductIdToDelete] = useState('');
 
-
     const columns = useMemo(
         () => [
             {
@@ -22,7 +21,6 @@ const ProductTable = ({ products }) => {
                 header: 'Name',
                 size: 200,
             },
-
             {
                 accessorKey: 'description',
                 header: 'Description',
@@ -38,7 +36,32 @@ const ProductTable = ({ products }) => {
                 header: 'Categories',
                 size: 250,
             },
-
+            {
+                accessorKey: 'retailPrice',
+                header: 'Retail Price',
+                size: 100,
+            },
+            {
+                accessorKey: 'salePrice',
+                header: 'Sale Price',
+                size: 100,
+            },
+            {
+                accessorKey: 'stockQuantity',
+                header: 'Stock Quantity',
+                size: 100,
+            },
+            {
+                accessorKey: 'isStockAvailable',
+                header: 'Stock Available',
+                size: 100,
+            },
+            {
+                accessorKey: 'picture',
+                header: 'Picture',
+                size: 200,
+                Cell: ({ cell }) => <img src={cell.getValue()} alt="Product" style={{ width: '100px' }} />,
+            },
             // {
             //     accessorKey: 'Actions',
             //     header: 'Actions',
@@ -51,12 +74,11 @@ const ProductTable = ({ products }) => {
             //                     mr: 1.5
             //                 }}
             //                 onClick={() => viewProduct(row.original)} color='secondary' />
-            //             {/* <button onClick={() => editProduct(row.original)}>Edit</button> */}
             //             <DeleteIcon
             //                 sx={{
             //                     cursor: 'pointer'
             //                 }}
-            //                 onClick={() => handleDeleteOpen(row.original.Id)} color='error' />
+            //                 onClick={() => handleDeleteOpen(row.original.id)} color='error' />
             //         </div>
             //     ),
             // },
@@ -67,8 +89,8 @@ const ProductTable = ({ products }) => {
     const data = useMemo(() => {
         return products.map(product => {
             // Combine attributes into a single string
-            const attributesString = product.attributes
-                .map(attr => `${attr.name}: ${attr.value}`)
+            const attributesString = product.variation.attributes
+                .map(attr => `${attr.attributeName}: ${attr.value}`)
                 .join(', ');
 
             // Combine category names into a single string
@@ -81,7 +103,12 @@ const ProductTable = ({ products }) => {
                 'name': product.name,
                 'description': product.description,
                 'attributes': attributesString,
-                'categories': categoriesString
+                'categories': categoriesString,
+                'retailPrice': product.variation.retailPrice,
+                'salePrice': product.variation.salePrice,
+                'stockQuantity': product.variation.stockQuantity,
+                'isStockAvailable': product.variation.isStockAvailable ? 'Yes' : 'No',
+                'picture': product.variation.picture
             };
         });
     }, [products]);
@@ -91,8 +118,15 @@ const ProductTable = ({ products }) => {
         data,
     });
 
+    const viewProduct = (product) => {
+        setSelectedProduct(product);
+        setOpenView(true);
+    };
 
-
+    const handleDeleteOpen = (id) => {
+        setProductIdToDelete(id);
+        setOpen(true);
+    };
 
     return (
         <Fragment>
