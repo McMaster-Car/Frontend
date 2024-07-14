@@ -30,6 +30,21 @@ const ProductTable = ({ products }) => {
                 accessorKey: 'attributes',
                 header: 'Attributes',
                 size: 250,
+                Cell: ({ cell }) => {
+                    const attributes = cell.getValue().split('\n ');
+                    return (
+                        <div>
+                            {attributes.map((attr, index) => {
+                                const [attributeName, value] = attr.split(': ');
+                                return (
+                                    <div key={index}>
+                                        <strong>{attributeName}</strong>: {value}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    );
+                },
             },
             {
                 accessorKey: 'categories',
@@ -60,7 +75,7 @@ const ProductTable = ({ products }) => {
                 accessorKey: 'picture',
                 header: 'Picture',
                 size: 200,
-                Cell: ({ cell }) => <img src={cell.getValue()} alt="Product" style={{ width: '100px' }} />,
+                Cell: ({ cell }) => <img src={cell.getValue()} alt="Product Image" style={{ width: '100px' }} />,
             },
             // {
             //     accessorKey: 'Actions',
@@ -90,8 +105,8 @@ const ProductTable = ({ products }) => {
         return products.map(product => {
             // Combine attributes into a single string
             const attributesString = product.variation.attributes
-                .map(attr => `${attr.attributeName}: ${attr.value}`)
-                .join(', ');
+            .map(attr => `${attr.attributeName}: ${attr.value}`)
+            .join('\n ');
 
             // Combine category names into a single string
             const categoriesString = product.categories

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts, selectProducts } from '../../../store/products/productsSlice';
 import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
+import FileUpload from './FileUpload';
 
 function Products() {
 
@@ -87,21 +88,28 @@ function Products() {
                     <Button
 
 
-                      onClick={()=> navigate('/admin/add-product')}
-                        sx={{
-                          backgroundColor: theme.palette.secondary.main,
-                          border: '1 solid #178582', borderRadius: 2,
-                          color: '#fff',
-                          "&:hover": {
-                            color: '#000',
-                            backgroundColor: '#0da39f'
+                      onClick={() => navigate('/admin/add-product')}
+                      sx={{
+                        backgroundColor: theme.palette.secondary.main,
+                        border: '1 solid #178582', borderRadius: 2,
+                        color: '#fff',
+                        "&:hover": {
+                          color: '#000',
+                          backgroundColor: '#0da39f'
 
-                          }
-                        }}
+                        }
+                      }}
                     >
                       Add Product
                     </Button>
-
+                    <Typography sx={{
+                      mx:3,
+                      fontWeight : 'bolder',
+                      mt:1
+                    }}>
+                      Or
+                    </Typography> 
+                    <FileUpload />
                   </Box>
                 </Grid>
 

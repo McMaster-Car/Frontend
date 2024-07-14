@@ -7,6 +7,7 @@ const SignUp = lazy(() => import('../Pages/Auth/SignUp'));
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
+const Home = lazy(() => import("../Pages/Client/Home"));
 
 
 export default function routes() {
@@ -36,7 +37,7 @@ export default function routes() {
     </Backdrop>
 
 
-    //Provide Admin Route Here
+
     if (isAdmin) {
         return (
             <Suspense
@@ -71,25 +72,13 @@ export default function routes() {
         >
             <Fragment>
                 <Routes>
-                    <Route path="/" element={
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                            <h1>
-                                Landing Page is yet to be created
-                            </h1>
-                            <h4>
-                                Please reach us soon
-                            </h4>
-                            <Button variant='contained' color='secondary' onClick={()=> navigate('/SignIn')}>
-                                Sign In for Admin Dashboard
-                            </Button>
-                        </div>
-                    } />
+                    <Route
+                        path="/"
+                        element={
+                            <Home />
+                        }
+                    />
+                    <Route path="/:categoryId" element={<Home />} />
                     <Route path='/SignIn' element={<SignIn />} />
                     <Route path='/SignUp' element={<SignUp />} />
                     <Route path="/*" element={<Navigate to="/" replace />} />
