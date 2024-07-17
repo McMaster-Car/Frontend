@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectCategories } from '../../../store/Categories/categorySlice';
 import { Suspense } from 'react';
@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 function Home() {
   const categoryResponse = useSelector(selectCategories);
   const { categoryId } = useParams();
+  
 
   return (
     <Suspense

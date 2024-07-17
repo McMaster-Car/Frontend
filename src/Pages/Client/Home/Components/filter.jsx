@@ -11,22 +11,21 @@ const Filter = ({ uniqueAttributes, selectedFilters, onFilterChange }) => {
     }, [selectedFilters]);
 
     const handleAutocompleteChange = (attrId, attrValues) => (event, value) => {
-        const updatedFilters = {
-            ...localFilters,
-            [attrId]: value
-        };
+        const updatedFilters = { ...localFilters };
+
+        if (value === null) {
+            delete updatedFilters[attrId]; 
+        } else {
+            updatedFilters[attrId] = value;
+        }
 
         setLocalFilters(updatedFilters);
-        onFilterChange(updatedFilters); 
-
-        const index = attrValues.indexOf(value);
-      
+        onFilterChange(updatedFilters);
     };
 
     const handleClearAll = () => {
-        // console.log(selectedFilters);
         setLocalFilters({});
-        onFilterChange({}); 
+        onFilterChange({});
     };
 
     return (

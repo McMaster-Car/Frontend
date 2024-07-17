@@ -10,11 +10,12 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Button, Grid } from '@mui/material';
+import { Backdrop, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid } from '@mui/material';
 import Products from '../Products';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '../../../../store/products/productsSlice';
 import Filter from './filter';
+import ProductList from "../Products/ProductList"
 
 const drawerWidth = 240;
 
@@ -25,10 +26,55 @@ export default function MainComponent({ categories }) {
   const [lastChild, setLastChild] = React.useState(false);
   const [notParent, setNotParent] = React.useState(false);
   const [uniqueAttributes, setUniqueAttributes] = React.useState([]);
+  const [selectedFilters, setSelectedFilters] = React.useState({});
+  const [filteredProducts, setFilteredProducts] = React.useState([]);
 
   const productsResponse = useSelector(selectProducts);
 
   const topCategories = React.useMemo(() => categories.filter((category) => !category.parentCategory), [categories]);
+
+  const getAttrbutes = (filtered) => {
+    const attributesMap = {};
+
+    filtered.forEach(product => {
+      product.variation.attributes.forEach(attribute => {
+        if (!attributesMap[attribute.attributeId]) {
+          attributesMap[attribute.attributeId] = {
+            id: attribute.attributeId,
+            name: attribute.attributeName,
+            values: new Set(),
+          };
+        }
+        attributesMap[attribute.attributeId].values.add(attribute.value.trim());
+      });
+    });
+
+    const uniqueAttributesArray = Object.values(attributesMap).map(attribute => ({
+      id: attribute.id,
+      name: attribute.name,
+      values: Array.from(attribute.values),
+    }));
+
+    return uniqueAttributesArray;
+  };
+
+  const transformData = (inputData) => {
+    return Object.keys(inputData).map(key => ({
+      attributeId: key,
+      value: inputData[key]
+    }));
+  };
+
+
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+
+    setTimeout(() => {
+      setLoading(false)
+    }, 2000)
+
+  }, [])
 
   React.useEffect(() => {
     if (categoryId) {
@@ -44,7 +90,6 @@ export default function MainComponent({ categories }) {
       const categoryExists = topCategories.some(category => category._id === categoryId);
 
       if (categoryExists) {
-        // console.log('Category exists');
         setNotParent(false);
       } else {
         if (productsResponse.products && productsResponse.products.length > 0) {
@@ -54,34 +99,31 @@ export default function MainComponent({ categories }) {
             )
           );
 
-          const attributesMap = {};
+          const filters = localStorage.getItem("filters");
+          if (filters) {
+            const filtersData = transformData(JSON.parse(filters));
+            setSelectedFilters(JSON.parse(filters));
 
-          filtered.forEach(product => {
-            product.variation.attributes.forEach(attribute => {
-              if (!attributesMap[attribute.attributeId]) {
-                attributesMap[attribute.attributeId] = {
-                  id: attribute.attributeId,
-                  name: attribute.attributeName,
-                  values: new Set(),
-                };
-              }
-              attributesMap[attribute.attributeId].values.add(attribute.value.trim());
+            const filteredProducts = filtered.filter(product => {
+              return filtersData.every(filter => {
+                return product.variation.attributes.some(attribute => {
+                  return attribute.attributeId === filter.attributeId && attribute.value.trim() === filter.value.trim();
+                });
+              });
             });
-          });
 
-          const uniqueAttributesArray = Object.values(attributesMap).map(attribute => ({
-            id: attribute.id,
-            name: attribute.name,
-            values: Array.from(attribute.values),
-          }));
-
-          // console.log(uniqueAttributesArray);
-          setUniqueAttributes(uniqueAttributesArray);
+            const attr = getAttrbutes(filteredProducts);
+            setUniqueAttributes(attr);
+            setFilteredProducts(filteredProducts);
+          } else {
+            const attr = getAttrbutes(filtered);
+            setUniqueAttributes(attr);
+            setFilteredProducts([]);
+          }
         } else {
-          // console.log("Products Not Found");
+          setFilteredProducts([]);
         }
         setNotParent(true);
-        // console.log('Category does not exist');
       }
     }
   }, [categoryId, topCategories, productsResponse.products]);
@@ -116,12 +158,12 @@ export default function MainComponent({ categories }) {
             {subCategories.map((subCategory) => (
               <Grid key={subCategory._id}
                 sx={{
-                  my: 1
+                  m: 1
                 }}
                 item
                 xs={2}
               >
-                <Button onClick={() => handleCategoryClick(subCategory)}>
+                {/* <Button onClick={() => handleCategoryClick(subCategory)}>
                   <Typography
                     sx={{
                       color: subCategory.length === 0 ? 'green' : 'inherit',
@@ -129,13 +171,33 @@ export default function MainComponent({ categories }) {
                     }} >
                     {subCategory.name}
                   </Typography>
-                </Button>
+                </Button> */}
+                <Card>
+                  <CardActionArea onClick={() => handleCategoryClick(subCategory)}>
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image={subCategory.image}
+                      alt={subCategory.name}
+                    />
+                    <CardContent>
+                      <Typography sx={{
+                        color: subCategory.length === 0 ? 'green' : 'inherit',
+                        fontSize: '12px',
+                        textAlign: "center"
+                      }}
+                        gutterBottom variant="h5" component="div">
+                        {subCategory.name}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
               </Grid>
             ))}
           </Grid>
         ) : (
           <>
-            <Products categoryId={category._id} />
+            <Products categoryId={category._id} filteredProducts={filteredProducts} />
           </>
         )}
       </div>
@@ -163,15 +225,34 @@ export default function MainComponent({ categories }) {
           {children.length > 0 && (
             <Grid container>
               {children.map((child) => (
-                <Grid sx={{ my: 1 }} key={child._id} item xs={2}>
-                  <Button onClick={() => handleCategoryClick(child)}>
+                <Grid sx={{ m: 1 }} key={child._id} item xs={2}>
+                  <Card>
+                    <CardActionArea onClick={() => handleCategoryClick(child)}>
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        image={child.image}
+                        alt={child.name}
+                      />
+                      <CardContent>
+                        <Typography sx={{
+                          fontSize: '12px',
+                          textAlign: "center"
+                        }}
+                          gutterBottom variant="h5" component="div">
+                          {child.name}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                  {/* <Button onClick={() => handleCategoryClick(child)}>
                     <Typography sx={{
                       color: children.length === 0 ? 'green' : 'inherit',
                       fontSize: '12px'
                     }} >
                       {child.name}
                     </Typography>
-                  </Button>
+                  </Button> */}
                 </Grid>
               ))}
             </Grid>
@@ -187,22 +268,48 @@ export default function MainComponent({ categories }) {
     return renderCategories(selectedCategory);
   };
 
-  const [selectedFilters, setSelectedFilters] = React.useState({});
+  const handleFilterChange = (filters) => {
+    localStorage.setItem("filters", JSON.stringify(filters));
+    if (Object.keys(filters).length === 0) {
+      const filtered = productsResponse.products.filter(product =>
+        product.categories.some(category =>
+          category._id === categoryId || category.parentCategory === categoryId
+        )
+      );
 
-   
-    const handleFilterChange = (filters) => {
-      console.log(filters);
-      if(filters == {}){
-        console.log("No more filters Applied");
-      }
-      else{
-        console.log("Filter/s applied");
-        // Cant understand some times it shows categories and some times it shows products
-        // on mcmaster car 
-        // will recheck 
-      }
-        setSelectedFilters(filters);
-    };
+      const attr = getAttrbutes(filtered);
+      setUniqueAttributes(attr);
+      setFilteredProducts([]);
+    } else {
+      const filtersData = transformData(filters);
+
+      const filteredProducts = productsResponse.products.filter(product => {
+        return filtersData.every(filter => {
+          return product.variation.attributes.some(attribute => {
+            return attribute.attributeId === filter.attributeId && attribute.value.trim() === filter.value.trim();
+          });
+        });
+      });
+
+      console.log(filteredProducts);
+      setFilteredProducts(filteredProducts);
+      const attr = getAttrbutes(filteredProducts);
+      setUniqueAttributes(attr);
+    }
+    setSelectedFilters(filters)
+  };
+
+  if (loading) {
+    return (
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    )
+  }
+
 
 
   return (
@@ -220,13 +327,19 @@ export default function MainComponent({ categories }) {
         variant="permanent"
         anchor="left"
       >
-        <Typography textAlign="center"
+        <Typography
+          textAlign="center"
           sx={{
             my: 2,
             fontSize: '20px',
             fontWeight: 'bold',
-            color: '#178582'
+            color: '#178582',
+            cursor: 'pointer',
+            '&:hover': {
+              color: '#125b61'
+            }
           }}
+          onClick={() => { window.location.href = '/' }}
         >
           BMI SUPPLY
         </Typography>
@@ -256,7 +369,26 @@ export default function MainComponent({ categories }) {
         component="main"
         sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
       >
-        {selectedCategory ? renderSelectedCategory() : renderTopCategories()}
+        {
+          Object.keys(selectedFilters).length != 0 ?
+            (
+              filteredProducts.length > 0 ? (
+                <ProductList products={filteredProducts} />
+              ) : (
+                <Typography variant="h6">No products found</Typography>
+              )
+            )
+            :
+            (
+              <>
+                {
+                  categoryId ?
+                    renderSelectedCategory()
+                    :
+                    renderTopCategories()}
+              </>
+            )
+        }
       </Box>
     </Box>
   );
