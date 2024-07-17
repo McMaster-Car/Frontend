@@ -23,10 +23,11 @@ function Products() {
 
 
   useEffect(() => {
-    setLoading(true)
-    dispatch(fetchProducts());
-    setLoading(false)
-  }, [dispatch])
+    setTimeout(() => {
+      setLoading(false)
+
+    }, 1000);
+  }, [])
 
   if (loading) return (
     <Suspense
@@ -55,7 +56,7 @@ function Products() {
       fallback={
         <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
+          open={true}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -103,12 +104,12 @@ function Products() {
                       Add Product
                     </Button>
                     <Typography sx={{
-                      mx:3,
-                      fontWeight : 'bolder',
-                      mt:1
+                      mx: 3,
+                      fontWeight: 'bolder',
+                      mt: 1
                     }}>
                       Or
-                    </Typography> 
+                    </Typography>
                     <FileUpload />
                   </Box>
                 </Grid>

@@ -8,6 +8,8 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
 const Home = lazy(() => import("../Pages/Client/Home"));
+const ProductDetails = lazy(() => import("../Pages/Client/Products"));
+
 
 
 export default function routes() {
@@ -79,6 +81,9 @@ export default function routes() {
                         }
                     />
                     <Route path="/:categoryId" element={<Home />} />
+                    <Route path="/product" element={<ProductDetails />} />
+
+                    
                     <Route path='/SignIn' element={<SignIn />} />
                     <Route path='/SignUp' element={<SignUp />} />
                     <Route path="/*" element={<Navigate to="/" replace />} />

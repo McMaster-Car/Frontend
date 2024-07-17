@@ -2,11 +2,14 @@ import { Backdrop, Box, Card, CardActionArea, CardContent, CardMedia, CircularPr
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '../../../../store/products/productsSlice';
+import { useNavigate } from 'react-router-dom';
 
 function Products({ categoryId, filteredProducts }) {
 
     const productsResponse = useSelector(selectProducts);
-    const [loading , setLoading] = useState(true)
+    const [loading, setLoading] = useState(true)
+
+    const navigate = useNavigate();
 
 
     const [products, setProducts] = useState([])
@@ -31,6 +34,10 @@ function Products({ categoryId, filteredProducts }) {
 
     }, [filteredProducts])
 
+    const handleCardClick = (product) => {
+        navigate('/product', { state: { product } });
+    };
+
 
     return (
         <Box>
@@ -42,14 +49,18 @@ function Products({ categoryId, filteredProducts }) {
             </Backdrop>
 
             <>
-            <Typography gutterBottom variant="p" component="div" sx={{my:2}}>
-                {`${products?.length} products`}
-            </Typography>
+                <Typography gutterBottom variant="p" component="div" sx={{ my: 2 }}>
+                    {`${products?.length} products`}
+                </Typography>
                 <Grid container spacing={2}>
                     {products?.map((product) => (
                         <Grid item xs={12} sm={6} md={4} key={product._id}>
-                            <Card>
-                                <CardActionArea onClick={() => console.log(product._id)}>
+                            <Card
+                                sx={{ border: '2px solid #178582' }}
+                            >
+                                <CardActionArea
+                                    onClick={() => handleCardClick(product)}
+                                >
                                     <CardMedia
                                         component="img"
                                         height="140"
