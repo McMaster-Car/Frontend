@@ -29,12 +29,12 @@ export default function SignIn() {
       console.log(response);
 
       if (response.success) {
-        
+
         console.log(response.user)
         localStorage.setItem('User', JSON.stringify(response.user));
         localStorage.setItem("token", response.token)
         if (response.user.isAdmin)
-          window.location.href = '/';
+          window.location.href = '/admin/dashboard';
         //not complete else logic
         else
           window.location.href = '/';
@@ -69,7 +69,7 @@ export default function SignIn() {
       component="main"
       sx={{
         backgroundColor: '#fff',
-        height:'100vh'
+        height: '100vh'
       }}
     >
 
@@ -107,17 +107,17 @@ export default function SignIn() {
               id="email"
               name="email"
               sx={{
-                
-                width:'50%'
+
+                width: '50%'
               }}
               variant="standard"
-          
+
             />
-            
+
             <TextField
               margin="normal"
               required
-            
+
               name="password"
               placeholder="Password"
               type={showPassword ? 'text' : 'password'}
@@ -137,16 +137,16 @@ export default function SignIn() {
                 ),
               }}
               sx={{
-               width:'50%'
+                width: '50%'
               }}
             />
 
             <Button
               type="submit"
-             
+
 
               sx={{
-                width:'50%',
+                width: '50%',
                 mt: 3, mb: 2,
                 backgroundColor: theme.palette.secondary.main,
                 border: '1 solid #178582', borderRadius: 2,
@@ -160,13 +160,13 @@ export default function SignIn() {
             >
               Log In
             </Button>
-           
-              <Box sx={{display:'flex',justifyContent:'center'}} >
-                <Link href="/SignUp" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Box>
-        
+
+            <Box sx={{ display: 'flex', justifyContent: 'center' }} >
+              <Link href="/SignUp" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Box>
+
             <Box sx={{ alignSelf: 'center', mt: '8%' }}>
               <Typography variant="body2" color="text.secondary"  >
                 {`© BMI Supply`},All rights Reserved

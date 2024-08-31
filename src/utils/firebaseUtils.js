@@ -35,5 +35,26 @@ export const uploadFileToStorage = (file) => {
         );
     });
 };
+export const uploadFileToCatStorage = (file) => {
+    return new Promise((resolve, reject) => {
+        const storageRef = ref(storage, `categories/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // Handle upload progress if needed
+            },
+            (error) => {
+                
+                reject(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => resolve(downloadURL))
+                    .catch((error) => reject(error));
+            }
+        );
+    });
+};
 
 export default app;

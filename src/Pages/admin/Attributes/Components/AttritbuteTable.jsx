@@ -3,22 +3,30 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from 'material-react-table';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Fade, Grid, Modal } from '@mui/material';
 import AddNewValueModal from './AddNewValueModal';
 import Tooltip from '@mui/material/Tooltip';
+import Axios from '../../../../Api/Connection/Connect';
+import { useDispatch } from 'react-redux';
+import { fetchAttributes } from '../../../../store/Attributes/attributeSlice';
+import AddInfo from './AddInfo';
 
 const AttributeTable = ({ Attributes }) => {
 
   const [openEdit, setOpenEdit] = useState(false);
+  const [openEditInfo, setOpenEditInfo] = useState(false);
+
   const [editName, setEditName] = useState(null)
+  const [editAttribute, setEditAttribute] = useState(null)
+
   const [openView, setOpenView] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
   const [productIdToDelete, setProductIdToDelete] = useState('');
 
-
+  const dispatch = useDispatch()
 
   const handleEditOpen = () => {
     setOpenEdit(true);
@@ -28,6 +36,33 @@ const AttributeTable = ({ Attributes }) => {
     setOpenEdit(false);
   };
 
+  const handleEditOpenInfo = () => {
+    setOpenEditInfo(true);
+  };
+
+  const handleEditCloseInfo = () => {
+    setOpenEditInfo(false);
+  };
+
+  const handleDelete = async ({ id }) => {
+    try {
+      const res = await Axios.delete(`/attributes/delete-attributes/${id}`)
+      if (res.data.success) {
+        dispatch(fetchAttributes()).then(() => {
+          alert(res.data.message)
+        }).catch((err) => {
+          console.log(err);
+        })
+      }
+      alert(res.data.message)
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
+
+  }
 
   const columns = useMemo(
     () => [
@@ -41,13 +76,17 @@ const AttributeTable = ({ Attributes }) => {
         header: 'Values',
         size: 600,
       },
-
+      {
+        accessorKey: 'info',
+        header: 'Info',
+        size: 300,
+      },
       {
         accessorKey: 'Actions',
         header: 'Actions',
         size: 100,
         Cell: ({ row }) => (
-          <Box sx={{display:'flex' , flexDirection : 'row' , justifyContent : 'center'}} >
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }} >
             {/* <VisibilityIcon
               sx={{
                 cursor: 'pointer',
@@ -62,11 +101,21 @@ const AttributeTable = ({ Attributes }) => {
                 }}
                 onClick={() => EditProduct(row.original)} color='primary' />
             </Tooltip>
-            {/* <DeleteIcon
+            <Tooltip title="Add Information">
+              <AddIcon
+                sx={{
+                  cursor: 'pointer',
+                  mr: 1.5
+                }}
+                onClick={() => EditInfoFunc(row.original)} color='primary' />
+            </Tooltip>
+            <DeleteIcon
               sx={{
                 cursor: 'pointer'
               }}
-              onClick={() => handleDeleteOpen(row.original.Id)} color='error' /> */}
+              onClick={() => handleDelete({
+                id: row.original.Id
+              })} color='error' />
           </Box>
         ),
       },
@@ -78,6 +127,12 @@ const AttributeTable = ({ Attributes }) => {
     setEditName(product.name)
     handleEditOpen()
   };
+
+  const EditInfoFunc = (attribute) => {
+    setEditAttribute(attribute)
+    handleEditOpenInfo()
+  };
+
 
   const data = useMemo(() => {
     return Attributes.map(attribute => {
@@ -98,7 +153,8 @@ const AttributeTable = ({ Attributes }) => {
         return {
           'Id': attribute._id,
           'name': attribute.name,
-          'values': formattedValues
+          'values': formattedValues,
+          'info': attribute.info,
         };
       } else {
         // If there are 30 or fewer values, join them directly
@@ -107,7 +163,8 @@ const AttributeTable = ({ Attributes }) => {
         return {
           'Id': attribute._id,
           'name': attribute.name,
-          'values': valuesString
+          'values': valuesString,
+          'info': attribute.info,
         };
       }
     });
@@ -129,6 +186,11 @@ const AttributeTable = ({ Attributes }) => {
         open={openEdit}
         handleClose={handleEditClose}
         Name={editName}
+      />
+      <AddInfo
+        open={openEditInfo}
+        handleClose={handleEditCloseInfo}
+        data={editAttribute}
       />
     </Fragment>);
 };

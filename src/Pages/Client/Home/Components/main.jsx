@@ -22,6 +22,7 @@ const drawerWidth = 240;
 export default function MainComponent({ categories }) {
   const navigate = useNavigate();
   const { categoryId } = useParams();
+
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [lastChild, setLastChild] = React.useState(false);
   const [notParent, setNotParent] = React.useState(false);
@@ -43,6 +44,7 @@ export default function MainComponent({ categories }) {
             id: attribute.attributeId,
             name: attribute.attributeName,
             values: new Set(),
+            info: attribute.info,
           };
         }
         attributesMap[attribute.attributeId].values.add(attribute.value.trim());
@@ -53,6 +55,8 @@ export default function MainComponent({ categories }) {
       id: attribute.id,
       name: attribute.name,
       values: Array.from(attribute.values),
+      info: attribute.info,
+
     }));
 
     return uniqueAttributesArray;
@@ -131,6 +135,7 @@ export default function MainComponent({ categories }) {
   React.useEffect(() => {
     if (selectedCategory) {
       const subCategories = categories.filter((subCategory) => subCategory.parentCategory && subCategory.parentCategory._id === selectedCategory._id);
+
       setLastChild(subCategories.length === 0);
     }
   }, [selectedCategory, categories]);
@@ -263,9 +268,12 @@ export default function MainComponent({ categories }) {
   };
 
   const renderSelectedCategory = () => {
-    if (!selectedCategory) return null;
+   
+      if (!selectedCategory) return null;
 
-    return renderCategories(selectedCategory);
+      return renderCategories(selectedCategory);
+    
+   
   };
 
   const handleFilterChange = (filters) => {
@@ -291,7 +299,6 @@ export default function MainComponent({ categories }) {
         });
       });
 
-      console.log(filteredProducts);
       setFilteredProducts(filteredProducts);
       const attr = getAttrbutes(filteredProducts);
       setUniqueAttributes(attr);
@@ -309,7 +316,6 @@ export default function MainComponent({ categories }) {
       </Backdrop>
     )
   }
-
 
 
   return (
@@ -373,7 +379,7 @@ export default function MainComponent({ categories }) {
           Object.keys(selectedFilters).length != 0 ?
             (
               filteredProducts.length > 0 ? (
-                <ProductList products={filteredProducts} />
+                <ProductList categoryId={categoryId} filteredProducts={filteredProducts} />
               ) : (
                 <Typography variant="h6">No products found</Typography>
               )

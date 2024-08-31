@@ -7,6 +7,7 @@ const SignUp = lazy(() => import('../Pages/Auth/SignUp'));
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
+import VariationDetailsPage from '../Pages/Client/Products/VariationDetailsModal';
 const Home = lazy(() => import("../Pages/Client/Home"));
 const ProductDetails = lazy(() => import("../Pages/Client/Products"));
 
@@ -80,6 +81,13 @@ export default function routes() {
                             <Home />
                         }
                     />
+                    <Route
+                        path="/variation-details"
+                        element={
+                            <VariationDetailsPage />
+                        }
+                    />
+                    
                     <Route path="/:categoryId" element={<Home />} />
                     <Route path="/product" element={<ProductDetails />} />
 

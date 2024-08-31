@@ -1,106 +1,270 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper } from '@mui/material';
+import React, { useMemo, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Typography, Button, CssBaseline, Drawer, List, Divider } from '@mui/material';
+import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import Filter from '../Home/Components/filter';
+import './tableStyles.css';
+
+const drawerWidth = 240;
 
 const ProductDetail = () => {
     const location = useLocation();
-    const { product } = location.state || {};
+    const { Backendproduct } = location.state || {};
 
-    if (!product) {
+    const [uniqueFilterAttributes, setUniqueFilterAttributes] = useState([]);
+    const [selectedFilters, setSelectedFilters] = useState({});
+
+    const [selectedVariation, setSelectedVariation] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const navigate = useNavigate()
+
+    const handleOpenVariationPage = (variation) => {
+        navigate("/variation-details", { state: { variation } });
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedVariation(null);
+    };
+
+
+    if (!Backendproduct) {
         return <Typography>No product data available</Typography>;
     }
 
-    const { name, description, variation } = product;
-    const { retailPrice, attributes, picture } = variation;
+    const { name, description, variations } = Backendproduct;
 
-    // Filter out unwanted data
-    const filteredAttributes = attributes.filter(attr => attr.value && attr.value.trim());
+    // Function to get unique attributes from variations
+    const getUniqueAttributes = (variations) => {
+        const attributesMap = {};
+
+        variations.forEach(variation => {
+            variation.attributes.forEach(attribute => {
+                if (!attributesMap[attribute.attributeId]) {
+                    attributesMap[attribute.attributeId] = {
+                        id: attribute.attributeId,
+                        name: attribute.attributeName,
+                        values: new Set(),
+                        info: attribute.info,
+
+                    };
+                }
+                attributesMap[attribute.attributeId].values.add(attribute.value.trim());
+            });
+        });
+
+        const uniqueAttributesArray = Object.values(attributesMap).map(attribute => ({
+            id: attribute.id,
+            name: attribute.name,
+            values: Array.from(attribute.values),
+            info: attribute.info,
+
+        }));
+
+        return uniqueAttributesArray;
+    };
+
+    // Set unique filter attributes when variations change
+    useEffect(() => {
+        setUniqueFilterAttributes(getUniqueAttributes(variations));
+    }, [variations]);
+
+    // Handle filter change
+    const handleFilterChange = (updatedFilters) => {
+        setSelectedFilters(updatedFilters);
+    };
+
+    // Filter variations based on selected filters
+    const filteredVariations = useMemo(() => {
+        if (Object.keys(selectedFilters).length === 0) {
+            return variations;
+        }
+
+        return variations.filter(variation =>
+            Object.entries(selectedFilters).every(([key, value]) =>
+                variation.attributes.some(attr => attr.attributeId === key && attr.value.trim() === value)
+            )
+        );
+    }, [variations, selectedFilters]);
+
+    // Update unique filter attributes when filtered variations change
+    useEffect(() => {
+        setUniqueFilterAttributes(getUniqueAttributes(filteredVariations));
+    }, [filteredVariations]);
+
+    // Define columns based on unique attributes and additional fields
+    const uniqueAttributes = useMemo(() => {
+        return [...new Set(filteredVariations.flatMap(variation => variation.attributes.map(attr => attr.attributeName)))];
+    }, [filteredVariations]);
+
+    const columns = useMemo(
+        () => [
+            ...uniqueAttributes.map(attrName => ({
+                accessorKey: attrName,
+                header: attrName,
+                size: 100,
+                Cell: ({ cell }) => (
+                    <div className="custom-cell">{cell.getValue()}</div>
+                ),
+            })),
+            {
+                accessorKey: 'retailPrice',
+                header: 'Price',
+                size: 100,
+                Cell: ({ cell }) => (
+                    <div className="custom-cell">{cell.getValue()}</div>
+                ),
+            },
+            {
+                accessorKey: 'picture',
+                header: 'Picture',
+                size: 150,
+                Cell: ({ cell }) => (
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center'
+                    }}>
+                        <img
+                            src={cell.getValue()}
+                            alt={name}
+                            className="custom-img"
+                        />
+                    </Box>
+                ),
+            },
+            {
+                accessorKey: 'addToCart',
+                header: 'Add to Cart',
+                size: 150,
+                Cell: ({ row }) => (
+                    <>
+                        <Box sx={{
+                            p: 1
+                        }}>
+
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => console.log(`Variation ID: ${row.original.addToCart}`)}
+                            >
+                                Add to Cart
+                            </Button>
+                        </Box>
+                        <Box sx={{
+                            p: 1
+                        }}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() =>
+                                    handleOpenVariationPage(row.original)
+                                }
+                            >
+                                View Variation
+                            </Button>
+                        </Box>
+                    </>
+                ),
+            },
+        ],
+        [uniqueAttributes, name]
+    );
+
+    const data = useMemo(() => filteredVariations.map(variation => {
+        const formattedAttributes = (variation.attributes || []).reduce((acc, attr) => {
+            acc[attr.attributeName] = attr.value;
+            return acc;
+        }, {});
+        return {
+            ...formattedAttributes,
+            retailPrice: variation.retailPrice,
+            picture: variation.picture,
+            addToCart: variation._id,
+        };
+    }), [filteredVariations]);
+
+    const table = useMaterialReactTable({
+        columns,
+        data,
+    });
 
     return (
-        <Box sx={{ p: 2 }}>
-            <Box sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between'
-            }}>
-                <Typography variant="h5" component="div" gutterBottom>
-                    {name}
-                </Typography>
-                <Button variant="contained" color="primary">
-                    Add to Cart
-                </Button>
-                {/* <Typography variant="p" component="div" gutterBottom>
-                    Price: {retailPrice}
-                </Typography> */}
+        <>
+            <Box sx={{ display: 'flex' }}>
+                <CssBaseline />
+                <Drawer
+                    sx={{
+                        width: drawerWidth,
+                        flexShrink: 0,
+                        '& .MuiDrawer-paper': {
+                            width: drawerWidth,
+                            boxSizing: 'border-box',
+                        },
+                    }}
+                    variant="permanent"
+                    anchor="left"
+                >
+                    <Typography
+                        textAlign="center"
+                        sx={{
+                            my: 2,
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            color: '#178582',
+                            cursor: 'pointer',
+                            '&:hover': {
+                                color: '#125b61'
+                            }
+                        }}
+                        onClick={() => { window.location.href = '/' }}
+                    >
+                        BMI SUPPLY
+                    </Typography>
+                    <Divider />
+                    <List>
+                        <Filter
+                            uniqueAttributes={uniqueFilterAttributes}
+                            selectedFilters={selectedFilters}
+                            onFilterChange={handleFilterChange}
+                        />
+                    </List>
+                    <Divider />
+                </Drawer>
+                <Box sx={{ p: 2 }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between'
+                    }}>
+                        <Typography variant="h5" component="div" gutterBottom>
+                            {name}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body1" color="text.secondary" gutterBottom>
+                        {description}
+                    </Typography>
+                    <Box sx={{
+                        my: 2
+                    }}>
+                        <Typography
+                            variant="h6"
+                            fontWeight="bold" color="black">
+                            Variations:
+                        </Typography>
+                    </Box>
+                    <div className="table-container">
+                        <MaterialReactTable
+                            table={table} />
+                    </div>
+                </Box>
             </Box>
-            <Typography variant="body1" color="text.secondary" gutterBottom>
-                {description}
-            </Typography>
-            {/* <Button variant="contained" color="primary">
-                Add to Cart
-            </Button> */}
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center'
-            }}>
-                <img
-                    src={picture}
-                    alt={name}
-                    style={{
-                        width: '50%',
-                        height: 'auto',
-                        marginBottom: '16px',
 
-                    }} />
-
-            </Box>
-            <Typography
-                variant="p"
-                component="div"
-                textAlign="center"
-                gutterBottom>
-                Price: {retailPrice}
-            </Typography>
-
-
-            <TableContainer component={Paper} sx={{ my: 4 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{
-                                textAlign: "center",
-                                fontWeight: "bold"
-                            }}
-                            >Attribute</TableCell>
-                            <TableCell sx={{
-                                textAlign: "center",
-                                fontWeight: "bold"
-                            }}>Value</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredAttributes.map(attr => (
-                            <TableRow key={attr.attributeId}>
-                                <TableCell
-                                    sx={{
-                                        textAlign: "center",
-                                        fontWeight: "bold"
-                                    }}
-                                >{attr.attributeName}</TableCell>
-                                <TableCell
-                                    sx={{
-                                        textAlign: "center"
-                                    }}
-                                >{attr.value}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-
-        </Box>
+        </>
     );
 };
 
 export default ProductDetail;
+
+
+// in this code of mine add a feature near to add to cart a button to view variation that give complete details of that specific variation with the product name and description and picture in the center and there should be option to add to cart or buy now in that variation page

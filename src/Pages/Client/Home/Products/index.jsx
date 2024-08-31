@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '../../../../store/products/productsSlice';
 import { useNavigate } from 'react-router-dom';
+import Axios from '../../../../Api/Connection/Connect';
 
 function Products({ categoryId, filteredProducts }) {
 
@@ -19,7 +20,6 @@ function Products({ categoryId, filteredProducts }) {
 
         if (filteredProducts.length == 0) {
 
-            console.log("Filtered Products are 0 ");
             var productsByCat = productsResponse?.products?.filter(
                 (product) => product.categories[0]._id === categoryId
             );
@@ -34,8 +34,24 @@ function Products({ categoryId, filteredProducts }) {
 
     }, [filteredProducts])
 
-    const handleCardClick = (product) => {
-        navigate('/product', { state: { product } });
+    const handleCardClick = async (product) => {
+        setLoading(true)
+        var id, isParentID
+        if (product.Parent_Product_ID != null) {
+            id = product.Parent_Product_ID
+            isParentID = true
+        }
+        else {
+            id = product._id
+            isParentID = false
+        }
+        console.log("products Parent Product ID ", id);
+
+        const res = await Axios.get(`/products/getProduct-withVariation/${id}/${isParentID}`)
+        console.log(res.data);
+        const Backendproduct = res.data.data
+        setLoading(false)
+        navigate('/product', { state: { Backendproduct } });
     };
 
 
@@ -58,9 +74,8 @@ function Products({ categoryId, filteredProducts }) {
                             <Card
                                 sx={{ border: '2px solid #178582' }}
                             >
-                                <CardActionArea
-                                    onClick={() => handleCardClick(product)}
-                                >
+                                <CardActionArea onClick={() => handleCardClick(product)}>
+
                                     <CardMedia
                                         component="img"
                                         height="140"
