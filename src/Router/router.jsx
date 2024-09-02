@@ -8,6 +8,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Button } from '@mui/material';
 import VariationDetailsPage from '../Pages/Client/Products/VariationDetailsModal';
+import CartPage from '../Pages/Client/Cart/ViewCart';
 const Home = lazy(() => import("../Pages/Client/Home"));
 const ProductDetails = lazy(() => import("../Pages/Client/Products"));
 
@@ -87,6 +88,13 @@ export default function routes() {
                             <VariationDetailsPage />
                         }
                     />
+                     <Route
+                        path="/cart"
+                        element={
+                            <CartPage />
+                        }
+                    />
+                    
                     
                     <Route path="/:categoryId" element={<Home />} />
                     <Route path="/product" element={<ProductDetails />} />

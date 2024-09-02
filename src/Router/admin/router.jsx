@@ -3,6 +3,7 @@ import React, { Suspense, lazy, Fragment } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
 import VariationDetailsPage from '../../Pages/Client/Products/VariationDetailsModal';
 import OrderDetails from '../../Pages/admin/Orders/Details/OrderDetails'
+import CartPage from '../../Pages/Client/Cart/ViewCart';
 const Attributes = lazy(() => import('../../Pages/admin/Attributes'));
 const Category = lazy(() => import('../../Pages/admin/Categories'));
 const Dashboard = lazy(() => import("../../Pages/Dashboard"));
@@ -70,6 +71,12 @@ export default function routess() {
                     <Route path="/admin/orders" element={<Orders />} />
                     <Route path="/admin/order/:orderId" element={<OrderDetails />} />
 
+                    <Route
+                        path="/cart"
+                        element={
+                            <CartPage />
+                        }
+                    />
                     <Route path="/admin/users" element={<Users />} />
                     <Route path="/admin/reports" element={< Reports />} />
 

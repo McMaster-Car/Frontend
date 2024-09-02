@@ -1,9 +1,10 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Typography, Button, CssBaseline, Drawer, List, Divider } from '@mui/material';
+import { Box, Typography, Button, CssBaseline, Drawer, List, Divider, Badge, IconButton } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import Filter from '../Home/Components/filter';
 import './tableStyles.css';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const drawerWidth = 240;
 
@@ -16,6 +17,9 @@ const ProductDetail = () => {
 
     const [selectedVariation, setSelectedVariation] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [cartCount, setCartCount] = useState(0);
+
 
     const navigate = useNavigate()
 
@@ -68,7 +72,17 @@ const ProductDetail = () => {
     // Set unique filter attributes when variations change
     useEffect(() => {
         setUniqueFilterAttributes(getUniqueAttributes(variations));
+
+
     }, [variations]);
+
+
+    useEffect(() => {
+        // Check if the item is already in the cart
+        const orderCart = JSON.parse(localStorage.getItem('orderCart')) || [];
+        // Update cart count
+        setCartCount(orderCart.length);
+    }, [])
 
     // Handle filter change
     const handleFilterChange = (updatedFilters) => {
@@ -135,22 +149,11 @@ const ProductDetail = () => {
             },
             {
                 accessorKey: 'addToCart',
-                header: 'Add to Cart',
+                header: 'Action',
                 size: 150,
                 Cell: ({ row }) => (
                     <>
-                        <Box sx={{
-                            p: 1
-                        }}>
 
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => console.log(`Variation ID: ${row.original.addToCart}`)}
-                            >
-                                Add to Cart
-                            </Button>
-                        </Box>
                         <Box sx={{
                             p: 1
                         }}>
@@ -221,6 +224,22 @@ const ProductDetail = () => {
                     >
                         BMI SUPPLY
                     </Typography>
+                    <Divider />
+
+                    <Box sx={{
+                        display:'flex',
+                        flexDirection : 'row',
+                        justifyContent : 'flex-end',
+                        mr:3,
+                        my:1
+                    }}>
+                        
+                        <IconButton onClick={() => navigate('/cart')} color="primary">
+                            <Badge badgeContent={cartCount} color="secondary">
+                                <ShoppingCartIcon />
+                            </Badge>
+                        </IconButton>
+                    </Box>
                     <Divider />
                     <List>
                         <Filter

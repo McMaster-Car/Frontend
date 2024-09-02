@@ -10,12 +10,13 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Backdrop, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid } from '@mui/material';
+import { Backdrop, Badge, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, IconButton } from '@mui/material';
 import Products from '../Products';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '../../../../store/products/productsSlice';
 import Filter from './filter';
 import ProductList from "../Products/ProductList"
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const drawerWidth = 240;
 
@@ -29,6 +30,16 @@ export default function MainComponent({ categories }) {
   const [uniqueAttributes, setUniqueAttributes] = React.useState([]);
   const [selectedFilters, setSelectedFilters] = React.useState({});
   const [filteredProducts, setFilteredProducts] = React.useState([]);
+
+  const [cartCount, setCartCount] = React.useState(0);
+
+
+  React.useEffect(() => {
+          // Check if the item is already in the cart
+          const orderCart = JSON.parse(localStorage.getItem('orderCart')) || [];
+          // Update cart count
+          setCartCount(orderCart.length);
+      }, [])
 
   const productsResponse = useSelector(selectProducts);
 
@@ -268,12 +279,12 @@ export default function MainComponent({ categories }) {
   };
 
   const renderSelectedCategory = () => {
-   
-      if (!selectedCategory) return null;
 
-      return renderCategories(selectedCategory);
-    
-   
+    if (!selectedCategory) return null;
+
+    return renderCategories(selectedCategory);
+
+
   };
 
   const handleFilterChange = (filters) => {
@@ -349,7 +360,24 @@ export default function MainComponent({ categories }) {
         >
           BMI SUPPLY
         </Typography>
+
         <Divider />
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          mr: 3,
+          my: 1
+        }}>
+
+          <IconButton onClick={() => navigate('/cart')} color="primary">
+            <Badge badgeContent={cartCount} color="secondary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+        </Box>
+        <Divider />
+
         <List>
           {notParent ? (
             <Filter
